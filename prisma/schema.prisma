@@ -1,0 +1,56 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+}
+
+model Tutor {
+    Id         Int     @id @default(autoincrement())
+    nome       String
+    email      String
+    telefone   String
+    cep        String?
+    logradouro String?
+    bairro     String?
+    localidade String?
+    uf         String?
+    ativo      Boolean @default(true)
+
+    atendimentos Atendimento[]
+
+    @@map("tutor")
+}
+
+enum CategoriaPets {
+    Cachorro
+    Passaro
+    Gato
+    Roedor
+}
+
+model Pet {
+    id         Int           @id @default(autoincrement())
+    nome       String
+    descricao  String?
+    categoria  CategoriaPets
+    disponivel Boolean       @default(true)
+    preco      Float
+    foto       String?
+
+    atendimento Atendimento[]
+
+    @@map("pets")
+}
+
+model Atendimento {
+    id      Int      @id @default(autoincrement())
+    data    DateTime @default(now())
+    tutor   Tutor    @relation(fields: [tutorId], references: [Id])
+    tutorId Int
+    pet     Pet      @relation(fields: [petId], references: [id])
+    petId   Int
+
+    @@map("atendimentos")
+}
