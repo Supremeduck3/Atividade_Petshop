@@ -75,8 +75,11 @@ export default class tutorModel {
         if (filtros.cep !== undefined) {
             where.cep = parseFloat(filtros.cep);
         }
-        if (filtros.telefone !== undefined) {
-            where.telefone = parseFloat(filtros.telefone);
+        if (filtros.logradouro !== undefined) {
+            where.logradouro = parseFloat(filtros.logradouro);
+        }
+        if (filtros.bairro !== undefined) {
+            where.bairro = parseFloat(filtros.bairro);
         }
 
         return prisma.tutor.findMany({ where });
