@@ -1,24 +1,27 @@
-import tutorModel from '../models/tutorModel.js';
+import TutorModel from '../models/TutorModel.js';
 
 export const criar = async (req, res) => {
     try {
-        if (!req.body) {
-            return res.status(400).json({ error: 'Corpo da requisição vazio. Envie os dados!' });
+        const data = data;
+
+        if (!data) {
+            return res.status(400).json({ error: "Corpo da requisição vazio. Envie os dados!" });
         }
 
-        const { nome, estado, preco } = req.body;
+        const { nome, email, telefone, cep } = data;
 
-        if (!nome){
-            return res.status(400).json({ error: 'O campo "nome" é obrigatório!' });
+        const camposObrigatorios = ["nome", "email", "telefone"];
+        const faltando = camposObrigatorios.filter((c) => !data[c] && data[c] !== 0);
+        if (faltando.length > 0) {
+            return res.status(400).json({
+                error: `Os seguintes campos são obrigatórios: ${faltando.join(", ")}`
+            });
         }
-        if (preco === undefined || preco === null) {
-            return res.status(400).json({ error: 'O campo "preco" é obrigatório!' });
-        }
 
-        const exemplo = new tutorModel({ nome, estado, preco: parseFloat(preco) });
-        const data = await exemplo.criar();
+        const novoTutor = new TutorModel({ nome, email, telefone, cep });
+        const tutor = await novoTutor.criar();
 
-        return res.status(201).json({ message: 'Registro criado com sucesso!', data });
+        return res.status(201).json({ message: "Tutor criado com sucesso", tutor });
     } catch (error) {
         console.error('Erro ao criar:', error);
         return res.status(500).json({ error: 'Erro interno ao salvar o registro.' });
