@@ -1,15 +1,15 @@
 import prisma from '../utils/prismaClient.js';
 
-export default class ExemploModel {
-    constructor({ id = null, nome = null, estado = true, preco = null } = {}) {
+export default class tutorModel {
+    constructor({ id = null, nome = null,email = null, telefone = null, cep = null, logradouro = null, bairro = null,   } = {}) {
         this.id = id;
         this.nome = nome;
-        this.estado = estado;
-        this.preco = preco;
+        this.email = email;
+        this.telefone = telefone
     }
 
     async criar() {
-        return prisma.exemplo.create({
+        return prisma.tutor.create({
             data: {
                 nome: this.nome,
                 estado: this.estado,
@@ -19,14 +19,14 @@ export default class ExemploModel {
     }
 
     async atualizar() {
-        return prisma.exemplo.update({
+        return prisma.tutor.update({
             where: { id: this.id },
             data: { nome: this.nome, estado: this.estado, preco: this.preco },
         });
     }
 
     async deletar() {
-        return prisma.exemplo.delete({ where: { id: this.id } });
+        return prisma.tutor.delete({ where: { id: this.id } });
     }
 
     static async buscarTodos(filtros = {}) {
@@ -42,14 +42,14 @@ export default class ExemploModel {
             where.preco = parseFloat(filtros.preco);
         }
 
-        return prisma.exemplo.findMany({ where });
+        return prisma.tutor.findMany({ where });
     }
 
     static async buscarPorId(id) {
-        const data = await prisma.exemplo.findUnique({ where: { id } });
+        const data = await prisma.tutor.findUnique({ where: { id } });
         if (!data) {
             return null;
         }
-        return new ExemploModel(data);
+        return new tutorModel(data);
     }
 }
