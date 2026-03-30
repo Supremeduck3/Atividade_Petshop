@@ -13,11 +13,11 @@ export default class AtendimentoModel {
         });
 
         if (!tutor) {
-            throw new Error('Registro não encontrado.');
+            return { erro: 'Registro não encontrado.' };
         }
 
         if (!tutor.ativo) {
-            throw new Error('Operação não permitida para registro inativo.');
+            return { erro: 'Operação não permitida para registro inativo.' };
         }
 
         const pet = await prisma.pet.findUnique({
@@ -25,16 +25,19 @@ export default class AtendimentoModel {
         });
 
         if (!pet) {
-            throw new Error('Registro não encontrado.');
+            return { erro: 'Registro não encontrado.' };
         }
 
         if (!pet.disponivel) {
-            throw new Error('Não é permitido utilizar item indisponível.');
+            return { erro: 'Não é permitido utilizar item indisponível.' };
         }
+
+        return null;
     }
 
     async criar() {
-        await this.validar();
+        const erro = await this.validar();
+        if (erro) return erro;
 
         return prisma.atendimento.create({
             data: {
@@ -50,10 +53,11 @@ export default class AtendimentoModel {
         });
 
         if (!existente) {
-            throw new Error('Registro não encontrado.');
+            return { erro: 'Registro não encontrado.' };
         }
 
-        await this.validar();
+        const erro = await this.validar();
+        if (erro) return erro;
 
         return prisma.atendimento.update({
             where: { id: this.id },
@@ -70,7 +74,7 @@ export default class AtendimentoModel {
         });
 
         if (!existente) {
-            throw new Error('Registro não encontrado.');
+            return { erro: 'Registro não encontrado.' };
         }
 
         return prisma.atendimento.delete({

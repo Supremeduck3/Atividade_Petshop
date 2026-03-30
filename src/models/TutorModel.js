@@ -28,42 +28,46 @@ export default class TutorModel {
 
     async validar() {
         if (!this.nome || this.nome.length < 3 || this.nome.length > 100) {
-            throw new Error('Nome deve ter entre 3 e 100 caracteres.');
+            return { erro: 'Nome deve ter entre 3 e 100 caracteres.' };
         }
 
         if (!this.email) {
-            throw new Error('Email é obrigatório.');
+            return { erro: 'Email é obrigatório.' };
         }
 
         if (!this.telefone) {
-            throw new Error('Telefone é obrigatório.');
+            return { erro: 'Telefone é obrigatório.' };
         }
 
         // CEP + ViaCEP
         if (this.cep) {
             if (!/^\d{8}$/.test(this.cep)) {
-                throw new Error('CEP inválido.');
+                return { erro: 'CEP inválido.' };
             }
 
             try {
                 const response = await axios.get(`https://viacep.com.br/ws/${this.cep}/json/`);
 
                 if (response.data.erro) {
-                    throw new Error('CEP não encontrado.');
+                    return { erro: 'CEP não encontrado.' };
                 }
 
                 this.logradouro = response.data.logradouro;
                 this.bairro = response.data.bairro;
                 this.localidade = response.data.localidade;
                 this.uf = response.data.uf;
+
             } catch (error) {
-                throw new Error('Serviço externo indisponível.');
+                return { erro: 'Serviço externo indisponível.' };
             }
         }
+
+        return null;
     }
 
     async criar() {
-        await this.validar();
+        const erro = await this.validar();
+        if (erro) return erro;
 
         return prisma.tutor.create({
             data: {
@@ -86,14 +90,15 @@ export default class TutorModel {
         });
 
         if (!existente) {
-            throw new Error('Registro não encontrado.');
+            return { erro: 'Registro não encontrado.' };
         }
 
         if (!existente.ativo) {
-            throw new Error('Operação não permitida para registro inativo.');
+            return { erro: 'Operação não permitida para registro inativo.' };
         }
 
-        await this.validar();
+        const erro = await this.validar();
+        if (erro) return erro;
 
         return prisma.tutor.update({
             where: { Id: this.Id },
@@ -117,11 +122,11 @@ export default class TutorModel {
         });
 
         if (!existente) {
-            throw new Error('Registro não encontrado.');
+            return { erro: 'Registro não encontrado.' };
         }
 
         if (!existente.ativo) {
-            throw new Error('Operação não permitida para registro inativo.');
+            return { erro: 'Operação não permitida para registro inativo.' };
         }
 
         return prisma.tutor.delete({

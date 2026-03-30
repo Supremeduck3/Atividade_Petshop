@@ -19,29 +19,7 @@ export default class PetModel {
         this.foto = foto;
     }
 
-    validar() {
-        if (!this.nome) {
-            throw new Error('Nome é obrigatório.');
-        }
-
-        if (!this.categoria) {
-            throw new Error('Categoria inválida.');
-        }
-
-        const categoriasValidas = ['Cachorro', 'Passaro', 'Gato', 'Roedor'];
-
-        if (!categoriasValidas.includes(this.categoria)) {
-            throw new Error('Categoria inválida.');
-        }
-
-        if (this.preco === null || this.preco < 0) {
-            throw new Error('Preço deve ser maior ou igual a 0.');
-        }
-    }
-
     async criar() {
-        this.validar();
-
         return prisma.pet.create({
             data: {
                 nome: this.nome,
@@ -55,16 +33,6 @@ export default class PetModel {
     }
 
     async atualizar() {
-        const existente = await prisma.pet.findUnique({
-            where: { id: this.id },
-        });
-
-        if (!existente) {
-            throw new Error('Registro não encontrado.');
-        }
-
-        this.validar();
-
         return prisma.pet.update({
             where: { id: this.id },
             data: {
@@ -79,32 +47,9 @@ export default class PetModel {
     }
 
     async deletar() {
-        const existente = await prisma.pet.findUnique({
-            where: { id: this.id },
-        });
-
-        if (!existente) {
-            throw new Error('Registro não encontrado.');
-        }
-
         return prisma.pet.delete({
             where: { id: this.id },
         });
-    }
-
-    // REGRA DE NEGÓCIO IMPORTANTE
-    static async verificarDisponibilidade(id) {
-        const pet = await prisma.pet.findUnique({ where: { id } });
-
-        if (!pet) {
-            throw new Error('Registro não encontrado.');
-        }
-
-        if (!pet.disponivel) {
-            throw new Error('Não é permitido utilizar item indisponível.');
-        }
-
-        return pet;
     }
 
     static async buscarTodos(filtros = {}) {
