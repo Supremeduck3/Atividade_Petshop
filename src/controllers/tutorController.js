@@ -1,42 +1,45 @@
-import tutorModel from '../models/tutorModel.js';
+import TutorModel from '../models/TutorModel.js';
 
 export const criar = async (req, res) => {
     try {
-        if (!req.body) {
+        const data = data;
+
+        if (!data) {
             return res.status(400).json({ error: 'Corpo da requisição vazio. Envie os dados!' });
         }
 
-        const { nome, estado, preco } = req.body;
+        const { nome, email, telefone, cep } = data;
 
-        if (!nome){
-            return res.status(400).json({ error: 'O campo "nome" é obrigatório!' });
+        const camposObrigatorios = ['nome', 'email', 'telefone'];
+        const faltando = camposObrigatorios.filter((c) => !data[c] && data[c] !== 0);
+        if (faltando.length > 0) {
+            return res.status(400).json({
+                error: `Os seguintes campos são obrigatórios: ${faltando.join(', ')}`,
+            });
         }
-        if (preco === undefined || preco === null) {
-            return res.status(400).json({ error: 'O campo "preco" é obrigatório!' });
-        }
 
-        const exemplo = new tutorModel({ nome, estado, preco: parseFloat(preco) });
-        const data = await exemplo.criar();
+        const novoTutor = new TutorModel({ nome, email, telefone, cep });
+        const tutor = await novoTutor.criar();
 
-        return res.status(201).json({ message: 'Registro criado com sucesso!', data });
+        return res.status(201).json({ message: 'Tutor criado com sucesso', tutor });
     } catch (error) {
         console.error('Erro ao criar:', error);
-        return res.status(500).json({ error: 'Erro interno ao salvar o registro.' });
+        return res.status(500).json({ error: 'Erro interno ao salvar o tutor.' });
     }
 };
 
 export const buscarTodos = async (req, res) => {
     try {
-        const registros = await tutorModel.buscarTodos(req.query);
+        const tutores = await TutorModel.buscarTodos(req.query);
 
-        if (!registros || registros.length === 0) {
-            return res.status(200).json({ message: 'Nenhum registro encontrado.' });
+        if (!tutores || tutores.length === 0) {
+            return res.status(200).json({ message: 'Nenhum tutor encontrado.' });
         }
 
-        return res.json(registros);
+        return res.json(tutores);
     } catch (error) {
         console.error('Erro ao buscar:', error);
-        return res.status(500).json({ error: 'Erro ao buscar registros.' });
+        return res.status(500).json({ error: 'Erro ao buscar tutores.' });
     }
 };
 
@@ -48,16 +51,16 @@ export const buscarPorId = async (req, res) => {
             return res.status(400).json({ error: 'O ID enviado não é um número válido.' });
         }
 
-        const exemplo = await tutorModel.buscarPorId(parseInt(id));
+        const tutor = await TutorModel.buscarPorId(parseInt(id));
 
-        if (!exemplo) {
-            return res.status(404).json({ error: 'Registro não encontrado.' });
+        if (!tutor) {
+            return res.status(404).json({ error: 'Tutor não encontrado.' });
         }
 
-        return res.json({ data: exemplo });
+        return res.json({ data: tutor });
     } catch (error) {
         console.error('Erro ao buscar:', error);
-        return res.status(500).json({ error: 'Erro ao buscar registro.' });
+        return res.status(500).json({ error: 'Erro ao buscar tutor.' });
     }
 };
 
@@ -73,23 +76,23 @@ export const atualizar = async (req, res) => {
             return res.status(400).json({ error: 'Corpo da requisição vazio. Envie os dados!' });
         }
 
-        const exemplo = await tutorModel.buscarPorId(parseInt(id));
+        const tutor = await tutorModel.buscarPorId(parseInt(id));
 
-        if (!exemplo) {
+        if (!tutor) {
             return res.status(404).json({ error: 'Registro não encontrado para atualizar.' });
         }
 
         if (req.body.nome !== undefined) {
-            exemplo.nome = req.body.nome;
+            tutor.nome = req.body.nome;
         }
         if (req.body.estado !== undefined) {
-            exemplo.estado = req.body.estado;
+            tutor.estado = req.body.estado;
         }
         if (req.body.preco !== undefined) {
-            exemplo.preco = parseFloat(req.body.preco);
+            tutor.preco = parseFloat(req.body.preco);
         }
 
-        const data = await exemplo.atualizar();
+        const data = await tutor.atualizar();
 
         return res.json({ message: `O registro "${data.nome}" foi atualizado com sucesso!`, data });
     } catch (error) {
@@ -106,15 +109,18 @@ export const deletar = async (req, res) => {
             return res.status(400).json({ error: 'ID inválido.' });
         }
 
-        const exemplo = await tutorModel.buscarPorId(parseInt(id));
+        const tutor = await tutorModel.buscarPorId(parseInt(id));
 
-        if (!exemplo) {
+        if (!tutor) {
             return res.status(404).json({ error: 'Registro não encontrado para deletar.' });
         }
 
-        await exemplo.deletar();
+        await tutor.deletar();
 
-        return res.json({ message: `O registro "${exemplo.nome}" foi deletado com sucesso!`, deletado: exemplo });
+        return res.json({
+            message: `O registro "${tutor.nome}" foi deletado com sucesso!`,
+            deletado: tutor,
+        });
     } catch (error) {
         console.error('Erro ao deletar:', error);
         return res.status(500).json({ error: 'Erro ao deletar registro.' });
