@@ -2,7 +2,7 @@ import TutorModel from '../models/TutorModel.js';
 
 export const criar = async (req, res) => {
     try {
-        const data = data;
+        const data = req.body;
 
         if (!data) {
             return res.status(400).json({ error: 'Corpo da requisição vazio. Envie os dados!' });
@@ -15,6 +15,12 @@ export const criar = async (req, res) => {
         if (faltando.length > 0) {
             return res.status(400).json({
                 error: `Os seguintes campos são obrigatórios: ${faltando.join(', ')}`,
+            });
+        }
+
+        if (nome.length < 3 || nome.length > 100) {
+            return res.status(400).json({
+                error: "O campo nome precisa ter entre 3 e 100 caracteres"
             });
         }
 
@@ -79,7 +85,7 @@ export const atualizar = async (req, res) => {
         const tutor = await TutorModel.buscarPorId(parseInt(id));
 
         if (!tutor) {
-            return res.status(404).json({ error: 'Registro não encontrado para atualizar.' });
+            return res.status(404).json({ error: 'Tutor não encontrado para atualizar.' });
         }
 
         if (req.body.nome !== undefined) {
@@ -94,10 +100,10 @@ export const atualizar = async (req, res) => {
 
         const data = await tutor.atualizar();
 
-        return res.json({ message: `O registro "${data.nome}" foi atualizado com sucesso!`, data });
+        return res.json({ message: `O Tutor "${data.nome}" foi atualizado com sucesso!`, data });
     } catch (error) {
         console.error('Erro ao atualizar:', error);
-        return res.status(500).json({ error: 'Erro ao atualizar registro.' });
+        return res.status(500).json({ error: 'Erro ao atualizar Tutor.' });
     }
 };
 
@@ -112,17 +118,17 @@ export const deletar = async (req, res) => {
         const tutor = await TutorModel.buscarPorId(parseInt(id));
 
         if (!tutor) {
-            return res.status(404).json({ error: 'Registro não encontrado para deletar.' });
+            return res.status(404).json({ error: 'Tutor não encontrado para deletar.' });
         }
 
         await tutor.deletar();
 
         return res.json({
-            message: `O registro "${tutor.nome}" foi deletado com sucesso!`,
+            message: `O Tutor "${tutor.nome}" foi deletado com sucesso!`,
             deletado: tutor,
         });
     } catch (error) {
         console.error('Erro ao deletar:', error);
-        return res.status(500).json({ error: 'Erro ao deletar registro.' });
+        return res.status(500).json({ error: 'Erro ao deletar tutor.' });
     }
 };
