@@ -56,7 +56,6 @@ export default class TutorModel {
                 this.bairro = response.data.bairro;
                 this.localidade = response.data.localidade;
                 this.uf = response.data.uf;
-
             } catch (error) {
                 return { erro: 'Serviço externo indisponível.' };
             }
