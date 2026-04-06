@@ -6,7 +6,7 @@ export async function gerarPdfPets(pet) {
 
     if (pet.foto) {
         const base64 = fs.readFileSync(aluno.foto).toString('base64');
-        fotoHtml = <img src="data:image/jpeg;base64,${base64}" width="120" />;
+        fotoHtml = <img src="data:image/jpeg;base64,${base64}" width="120"/>;
     }
 
     const html = `
