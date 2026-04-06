@@ -107,11 +107,6 @@ export default class TutorModel {
                 email: this.email,
                 telefone: this.telefone,
                 cep: this.cep,
-                logradouro: this.logradouro,
-                bairro: this.bairro,
-                localidade: this.localidade,
-                uf: this.uf,
-                ativo: this.ativo,
             },
         });
     }
