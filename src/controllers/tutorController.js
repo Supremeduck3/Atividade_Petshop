@@ -94,7 +94,7 @@ export const atualizar = async (req, res) => {
 
         const data = await tutor.atualizar();
 
-        return res.json({ message: `O Tutor "${data.nome}" foi atualizado com sucesso!`, data });
+        return res.json({ message: `O Tutor "${data.nome}" foi atualizado com sucesso!`, tutor });
     } catch (error) {
         console.error('Erro ao atualizar:', error);
         return res.status(500).json({ error: 'Erro ao atualizar Tutor.' });
