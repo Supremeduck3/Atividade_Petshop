@@ -85,11 +85,20 @@ export const atualizar = async (req, res) => {
         if (req.body.nome !== undefined) {
             pet.nome = req.body.nome;
         }
-        if (req.body.estado !== undefined) {
-            pet.estado = req.body.estado;
+        if (req.body.descricao !== undefined) {
+            pet.descricao = req.body.descricao;
+        }
+        if (req.body.categoria !== undefined) {
+            pet.categoria = req.body.categoria;
+        }
+        if (req.body.disponivel !== undefined) {
+            pet.disponivel = req.body.disponivel;
         }
         if (req.body.preco !== undefined) {
             pet.preco = parseFloat(req.body.preco);
+        }
+        if (req.body.foto !== undefined) {
+            pet.foto = req.body.foto;
         }
 
         const data = await pet.atualizar();

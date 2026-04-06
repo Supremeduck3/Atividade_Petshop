@@ -85,16 +85,19 @@ export const atualizar = async (req, res) => {
         if (req.body.nome !== undefined) {
             tutor.nome = req.body.nome;
         }
-        if (req.body.estado !== undefined) {
-            tutor.estado = req.body.estado;
+        if (req.body.email !== undefined) {
+            tutor.email = req.body.email;
         }
-        if (req.body.preco !== undefined) {
-            tutor.preco = parseFloat(req.body.preco);
+        if (req.body.telefone !== undefined) {
+            tutor.telefone = req.body.telefone;
+        }
+        if (req.body.cep !== undefined) {
+            tutor.cep = req.body.cep;
         }
 
         const data = await tutor.atualizar();
 
-        return res.json({ message: `O Tutor "${data.nome}" foi atualizado com sucesso!`, tutor });
+        return res.json({ message: `O Tutor "${data.nome}" foi atualizado com sucesso!`, data });
     } catch (error) {
         console.error('Erro ao atualizar:', error);
         return res.status(500).json({ error: 'Erro ao atualizar Tutor.' });
