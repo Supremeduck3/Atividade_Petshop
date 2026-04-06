@@ -18,12 +18,6 @@ export const criar = async (req, res) => {
             });
         }
 
-        if (nome.length < 3 || nome.length > 100) {
-            return res.status(400).json({
-                error: "O campo nome precisa ter entre 3 e 100 caracteres"
-            });
-        }
-
         const novoTutor = new TutorModel({ nome, email, telefone, cep });
         const tutor = await novoTutor.criar();
 
