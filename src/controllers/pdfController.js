@@ -1,4 +1,4 @@
-import PetModel from '../models/PetModel.js';
+import petModel from '../models/PetModel.js';
 import { gerarPdfPets, gerarPdfTodos } from '../utils/pdfHelper.js';
 
 export const informacoesTodos = async (req, res) => {
