@@ -82,7 +82,7 @@ export const atualizar = async (req, res) => {
             return res.status(400).json({ error: 'Corpo da requisição vazio. Envie os dados!' });
         }
 
-        const tutor = await tutorModel.buscarPorId(parseInt(id));
+        const tutor = await TutorModel.buscarPorId(parseInt(id));
 
         if (!tutor) {
             return res.status(404).json({ error: 'Tutor não encontrado para atualizar.' });
@@ -115,7 +115,7 @@ export const deletar = async (req, res) => {
             return res.status(400).json({ error: 'ID inválido.' });
         }
 
-        const tutor = await tutorModel.buscarPorId(parseInt(id));
+        const tutor = await TutorModel.buscarPorId(parseInt(id));
 
         if (!tutor) {
             return res.status(404).json({ error: 'Tutor não encontrado para deletar.' });
