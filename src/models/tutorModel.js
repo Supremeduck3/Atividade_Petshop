@@ -1,8 +1,9 @@
 import prisma from '../utils/prismaClient.js';
+import axios from 'axios';
 
-export default class tutorModel {
+export default class TutorModel {
     constructor({
-        id = null,
+        Id = null,
         nome = null,
         email = null,
         telefone = null,
@@ -13,7 +14,7 @@ export default class tutorModel {
         uf = null,
         ativo = true,
     } = {}) {
-        this.id = id;
+        this.Id = Id;
         this.nome = nome;
         this.email = email;
         this.telefone = telefone;
@@ -25,7 +26,45 @@ export default class tutorModel {
         this.ativo = ativo;
     }
 
+    async validar() {
+        if (!this.nome || this.nome.length < 3 || this.nome.length > 100) {
+            throw new Error('Nome deve ter entre 3 e 100 caracteres.');
+        }
+
+        if (!this.email) {
+            throw new Error('Email é obrigatório.');
+        }
+
+        if (!this.telefone) {
+            throw new Error('Telefone é obrigatório.');
+        }
+
+        // CEP + ViaCEP
+        if (this.cep) {
+            if (!/^\d{8}$/.test(this.cep)) {
+                throw new Error('CEP inválido.');
+            }
+
+            try {
+                const response = await axios.get(`https://viacep.com.br/ws/${this.cep}/json/`);
+
+                if (response.data.erro) {
+                    throw new Error('CEP não encontrado.');
+                }
+
+                this.logradouro = response.data.logradouro;
+                this.bairro = response.data.bairro;
+                this.localidade = response.data.localidade;
+                this.uf = response.data.uf;
+            } catch (error) {
+                throw new Error('Serviço externo indisponível.');
+            }
+        }
+    }
+
     async criar() {
+        await this.validar();
+
         return prisma.tutor.create({
             data: {
                 nome: this.nome,
@@ -36,13 +75,28 @@ export default class tutorModel {
                 bairro: this.bairro,
                 localidade: this.localidade,
                 uf: this.uf,
+                ativo: this.ativo,
             },
         });
     }
 
     async atualizar() {
+        const existente = await prisma.tutor.findUnique({
+            where: { Id: this.Id },
+        });
+
+        if (!existente) {
+            throw new Error('Registro não encontrado.');
+        }
+
+        if (!existente.ativo) {
+            throw new Error('Operação não permitida para registro inativo.');
+        }
+
+        await this.validar();
+
         return prisma.tutor.update({
-            where: { id: this.id },
+            where: { Id: this.Id },
             data: {
                 nome: this.nome,
                 email: this.email,
@@ -52,12 +106,27 @@ export default class tutorModel {
                 bairro: this.bairro,
                 localidade: this.localidade,
                 uf: this.uf,
+                ativo: this.ativo,
             },
         });
     }
 
     async deletar() {
-        return prisma.tutor.delete({ where: { id: this.id } });
+        const existente = await prisma.tutor.findUnique({
+            where: { Id: this.Id },
+        });
+
+        if (!existente) {
+            throw new Error('Registro não encontrado.');
+        }
+
+        if (!existente.ativo) {
+            throw new Error('Operação não permitida para registro inativo.');
+        }
+
+        return prisma.tutor.delete({
+            where: { Id: this.Id },
+        });
     }
 
     static async buscarTodos(filtros = {}) {
@@ -66,27 +135,25 @@ export default class tutorModel {
         if (filtros.nome) {
             where.nome = { contains: filtros.nome, mode: 'insensitive' };
         }
-        if (filtros.email !== undefined) {
-            where.email = filtros.email === 'true';
+
+        if (filtros.email) {
+            where.email = { contains: filtros.email, mode: 'insensitive' };
         }
-        if (filtros.telefone !== undefined) {
-            where.telefone = parseFloat(filtros.telefone);
-        }
-        if (filtros.cep !== undefined) {
-            where.cep = parseFloat(filtros.cep);
-        }
-        if (filtros.telefone !== undefined) {
-            where.telefone = parseFloat(filtros.telefone);
+
+        if (filtros.localidade) {
+            where.localidade = { contains: filtros.localidade, mode: 'insensitive' };
         }
 
         return prisma.tutor.findMany({ where });
     }
 
-    static async buscarPorId(id) {
-        const data = await prisma.tutor.findUnique({ where: { id } });
-        if (!data) {
-            return null;
-        }
-        return new tutorModel(data);
+    static async buscarPorId(Id) {
+        const data = await prisma.tutor.findUnique({
+            where: { Id },
+        });
+
+        if (!data) return null;
+
+        return new TutorModel(data);
     }
 }
