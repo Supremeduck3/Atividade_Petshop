@@ -2,6 +2,7 @@ import express from 'express';
 import 'dotenv/config';
 import petshopRoutes from './routes/petshopRoute.js';
 import fotoRoutes from './routes/fotoRoute.js';
+import pdfRoutes from './routes/pdfRoute.js';
 
 const app = express();
 app.use(express.json());
@@ -15,6 +16,7 @@ app.get('/', (req, res) => {
 // Rotas
 app.use('/api', petshopRoutes);
 app.use('/', fotoRoutes);
+app.use('/', pdfRoutes);
 
 app.use((req, res) => {
     res.status(404).json({ error: 'Rota não encontrada' });
