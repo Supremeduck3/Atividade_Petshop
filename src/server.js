@@ -1,6 +1,8 @@
 import express from 'express';
 import 'dotenv/config';
-import petshopRoutes from './routes/petshopRoute.js';
+import petshopRoutes from './routes/tutoresRoute.js';
+import atendimentoRoutes from './routes/tutoresRoute.js';
+import petshopRoutes from './routes/tutoresRoute.js';
 import fotoRoutes from './routes/fotoRoute.js';
 import pdfRoutes from './routes/pdfRoute.js';
 
@@ -14,6 +16,8 @@ app.get('/', (req, res) => {
 });
 
 // Rotas
+app.use('/api', petshopRoutes);
+app.use('/api', petshopRoutes);
 app.use('/api', petshopRoutes);
 app.use('/', fotoRoutes);
 app.use('/', pdfRoutes);

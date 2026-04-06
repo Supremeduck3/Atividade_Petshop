@@ -3,7 +3,7 @@ import { gerarPdfPets, gerarPdfTodos } from '../utils/pdfHelper.js';
 
 export const informacoesTodos = async (req, res) => {
     try {
-        const informacoes = await PetModel.buscarTodos(req.query);
+        const informacoes = await petModel.buscarTodos(req.query);
 
         if (!informacoes || informacoes.length === 0) {
             return res.status(200).json({ message: 'Nenhuma informação encontrada.' });
@@ -30,7 +30,7 @@ export const informacoesPorId = async (req, res) => {
             return res.status(400).json({ error: 'O ID enviado não é um número válido.' });
         }
 
-        const pet = await PetModel.buscarPorId(parseInt(id));
+        const pet = await petModel.buscarPorId(parseInt(id));
 
         if (!pet) {
             return res.status(404).json({ error: 'Registro de pet não encontrado.' });
