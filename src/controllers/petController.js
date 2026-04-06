@@ -1,4 +1,4 @@
-import TutorModel from '../models/TutorModel.js';
+import PetModel from '../models/PetModel.js';
 
 export const criar = async (req, res) => {
     try {
@@ -8,9 +8,9 @@ export const criar = async (req, res) => {
             return res.status(400).json({ error: 'Corpo da requisição vazio. Envie os dados!' });
         }
 
-        const { nome, email, telefone, cep } = data;
+        const { nome, descricao, categoria, disponivel, preco, foto } = data;
 
-        const camposObrigatorios = ['nome', 'email', 'telefone'];
+        const camposObrigatorios = ['nome', 'descricao', 'categoria', 'disponivel', 'preco', 'foto'];
         const faltando = camposObrigatorios.filter((c) => !data[c] && data[c] !== 0);
         if (faltando.length > 0) {
             return res.status(400).json({
@@ -18,28 +18,28 @@ export const criar = async (req, res) => {
             });
         }
 
-        const novoTutor = new TutorModel({ nome, email, telefone, cep });
-        const tutor = await novoTutor.criar();
+        const novoPet = new PetModel({ nome, descricao, categoria, disponivel, preco, foto });
+        const pet = await novoPet.criar();
 
-        return res.status(201).json({ message: 'Tutor criado com sucesso', tutor });
+        return res.status(201).json({ message: 'Pet criado com sucesso', pet });
     } catch (error) {
         console.error('Erro ao criar:', error);
-        return res.status(500).json({ error: 'Erro interno ao salvar o tutor.' });
+        return res.status(500).json({ error: 'Erro interno ao salvar o pet.' });
     }
 };
 
 export const buscarTodos = async (req, res) => {
     try {
-        const tutores = await TutorModel.buscarTodos(req.query);
+        const pets = await PetModel.buscarTodos(req.query);
 
-        if (!tutores || tutores.length === 0) {
-            return res.status(200).json({ message: 'Nenhum tutor encontrado.' });
+        if (!pets || pets.length === 0) {
+            return res.status(200).json({ message: 'Nenhum pet encontrado.' });
         }
 
-        return res.json(tutores);
+        return res.json(pets);
     } catch (error) {
         console.error('Erro ao buscar:', error);
-        return res.status(500).json({ error: 'Erro ao buscar tutores.' });
+        return res.status(500).json({ error: 'Erro ao buscar pets.' });
     }
 };
 
@@ -51,16 +51,16 @@ export const buscarPorId = async (req, res) => {
             return res.status(400).json({ error: 'O ID enviado não é um número válido.' });
         }
 
-        const tutor = await TutorModel.buscarPorId(parseInt(id));
+        const pet = await PetModel.buscarPorId(parseInt(id));
 
-        if (!tutor) {
-            return res.status(404).json({ error: 'Tutor não encontrado.' });
+        if (!pet) {
+            return res.status(404).json({ error: 'Pet não encontrado.' });
         }
 
-        return res.json({ data: tutor });
+        return res.json({ data: pet });
     } catch (error) {
         console.error('Erro ao buscar:', error);
-        return res.status(500).json({ error: 'Erro ao buscar tutor.' });
+        return res.status(500).json({ error: 'Erro ao buscar pet.' });
     }
 };
 
@@ -76,28 +76,28 @@ export const atualizar = async (req, res) => {
             return res.status(400).json({ error: 'Corpo da requisição vazio. Envie os dados!' });
         }
 
-        const tutor = await TutorModel.buscarPorId(parseInt(id));
+        const pet = await PetModel.buscarPorId(parseInt(id));
 
-        if (!tutor) {
-            return res.status(404).json({ error: 'Tutor não encontrado para atualizar.' });
+        if (!pet) {
+            return res.status(404).json({ error: 'Pet não encontrado para atualizar.' });
         }
 
         if (req.body.nome !== undefined) {
-            tutor.nome = req.body.nome;
+            pet.nome = req.body.nome;
         }
         if (req.body.estado !== undefined) {
-            tutor.estado = req.body.estado;
+            pet.estado = req.body.estado;
         }
         if (req.body.preco !== undefined) {
-            tutor.preco = parseFloat(req.body.preco);
+            pet.preco = parseFloat(req.body.preco);
         }
 
-        const data = await tutor.atualizar();
+        const data = await pet.atualizar();
 
-        return res.json({ message: `O Tutor "${data.nome}" foi atualizado com sucesso!`, data });
+        return res.json({ message: `O pet "${data.nome}" foi atualizado com sucesso!`, data });
     } catch (error) {
         console.error('Erro ao atualizar:', error);
-        return res.status(500).json({ error: 'Erro ao atualizar Tutor.' });
+        return res.status(500).json({ error: 'Erro ao atualizar pet.' });
     }
 };
 
@@ -109,20 +109,20 @@ export const deletar = async (req, res) => {
             return res.status(400).json({ error: 'ID inválido.' });
         }
 
-        const tutor = await TutorModel.buscarPorId(parseInt(id));
+        const pet = await PetModel.buscarPorId(parseInt(id));
 
-        if (!tutor) {
-            return res.status(404).json({ error: 'Tutor não encontrado para deletar.' });
+        if (!pet) {
+            return res.status(404).json({ error: 'Pet não encontrado para deletar.' });
         }
 
-        await tutor.deletar();
+        await pet.deletar();
 
         return res.json({
-            message: `O Tutor "${tutor.nome}" foi deletado com sucesso!`,
-            deletado: tutor,
+            message: `O pet "${pet.nome}" foi deletado com sucesso!`,
+            deletado: pet,
         });
     } catch (error) {
         console.error('Erro ao deletar:', error);
-        return res.status(500).json({ error: 'Erro ao deletar tutor.' });
+        return res.status(500).json({ error: 'Erro ao deletar pet.' });
     }
 };

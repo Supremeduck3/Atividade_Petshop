@@ -1,4 +1,4 @@
-import CatalogoModel from '../models/CatalogoModel.js';
+
 import { processarFoto, removerFoto } from '../utils/fotoHelper.js';
 
 export const uploadFoto = async (req, res) => {
