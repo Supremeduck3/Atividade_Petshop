@@ -30,16 +30,16 @@ export const criar = async (req, res) => {
 
 export const buscarTodos = async (req, res) => {
     try {
-        const registros = await tutorModel.buscarTodos(req.query);
+        const tutores = await TutorModel.buscarTodos(req.query);
 
-        if (!registros || registros.length === 0) {
-            return res.status(200).json({ message: 'Nenhum registro encontrado.' });
+        if (!tutores || tutores.length === 0) {
+            return res.status(200).json({ message: 'Nenhum tutor encontrado.' });
         }
 
-        return res.json(registros);
+        return res.json(tutores);
     } catch (error) {
         console.error('Erro ao buscar:', error);
-        return res.status(500).json({ error: 'Erro ao buscar registros.' });
+        return res.status(500).json({ error: 'Erro ao buscar tutores.' });
     }
 };
 
