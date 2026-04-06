@@ -1,5 +1,5 @@
-import petModel from './../models/PetModel.js';
-import { gerarPdfAluno, gerarPdfTodos } from '../utils/pdfHelper.js';
+import PetModel from '../models/PetModel.js';
+import { gerarPdfPets, gerarPdfTodos } from '../utils/pdfHelper.js';
 
 export const informacoesTodos = async (req, res) => {
     try {
@@ -13,7 +13,7 @@ export const informacoesTodos = async (req, res) => {
         return res
             .set({
                 'Content-Type': 'application/pdf',
-                'Content-Disposition': 'inline; filename="pets.pdf"',
+                'Content-Disposition': 'attachment; filename="pets.pdf"',
             })
             .send(pdf);
     } catch (error) {
@@ -36,11 +36,11 @@ export const informacoesPorId = async (req, res) => {
             return res.status(404).json({ error: 'Registro de pet não encontrado.' });
         }
 
-        const pdf = await gerarPdfPet(pet);
+        const pdf = await gerarPdfPets(pet);
         return res
             .set({
                 'Content-Type': 'application/pdf',
-                'Content-Disposition': `inline; filename="pets_${id}.pdf"`,
+                'Content-Disposition': `attachment; filename="pet_${id}.pdf"`,
             })
             .send(pdf);
     } catch (error) {

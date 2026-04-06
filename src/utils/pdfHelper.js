@@ -5,8 +5,8 @@ export async function gerarPdfPets(pet) {
     let fotoHtml = '-';
 
     if (pet.foto) {
-        const base64 = fs.readFileSync(aluno.foto).toString('base64');
-        fotoHtml = <img src="data:image/jpeg;base64,${base64}" width="120"/>;
+        const base64 = fs.readFileSync(pet.foto).toString('base64');
+        fotoHtml = `<img src="data:image/jpeg;base64,${base64}" width="120" />`;
     }
 
     const html = `
@@ -15,9 +15,9 @@ export async function gerarPdfPets(pet) {
         <h1>Informações do Pet</h1>
 
         <p>Foto: ${fotoHtml}</p>
-        <p>Nome: ${aluno.nome}</p>
-        <p>Descricao: ${aluno.descricao || '-'}</p>
-        <p>Preco: ${aluno.preco || '-'}</p>
+        <p>Nome: ${pet.nome}</p>
+        <p>Descricao: ${pet.descricao || '-'}</p>
+        <p>Preco: ${pet.preco || '-'}</p>
     </body>
     </html>
     `;
@@ -25,7 +25,7 @@ export async function gerarPdfPets(pet) {
     return htmlPdf.generatePdf({ content: html }, { format: 'A4' });
 }
 
-export async function gerarPdfTodos(petRoutes) {
+export async function gerarPdfTodos(pets) {
     const linhas = pets
         .map(
             (a) => `
@@ -34,9 +34,8 @@ export async function gerarPdfTodos(petRoutes) {
                 <td>${a.descricao || '-'}</td>
                 <td>${a.preco || '-'}</td>
                 <td>${a.foto || '-'}</td>
-                </tr>`,
+            </tr>`,
         )
-
         .join('');
 
     const html = `
